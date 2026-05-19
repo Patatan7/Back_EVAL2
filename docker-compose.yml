@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    container_name: backend-innovatech
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_PORT=3306
+    env_file:
+      - .env
+    networks:
+      - innovatech-network
+    volumes:
+      - backend_logs:/app/logs
+
+volumes:
+  backend_logs:
+    driver: local
+
+networks:
+  innovatech-network:
+    driver: bridge

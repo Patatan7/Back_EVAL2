@@ -33,17 +33,18 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            sudo docker stop backend-innovatech || true
-            sudo docker rm backend-innovatech || true
-            sudo docker pull patatan7/backend-innovatech:latest
-            sudo docker run -d \
-              --name backend-innovatech \
-              --restart always \
-              -p 3000:3000 \
-              -e DB_HOST=${{ secrets.DB_HOST }} \
-              -e DB_USER=${{ secrets.DB_USER }} \
-              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-              -e DB_NAME=${{ secrets.DB_NAME }} \
-              -e DB_PORT=3306 \
-              -v backend_logs:/app/logs \
-              patatan7/backend-innovatech:latest
+            ssh -i ~/frontend.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_BACKEND_HOST }} "
+              sudo docker stop backend-innovatech || true &&
+              sudo docker rm backend-innovatech || true &&
+              sudo docker pull patatan7/backend-innovatech:latest &&
+              sudo docker run -d \
+                --name backend-innovatech \
+                --restart always \
+                -p 3000:3000 \
+                -e DB_HOST=${{ secrets.DB_HOST }} \
+                -e DB_USER=${{ secrets.DB_USER }} \
+                -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+                -e DB_NAME=${{ secrets.DB_NAME }} \
+                -e DB_PORT=3306 \
+                patatan7/backend-innovatech:latest
+            "
